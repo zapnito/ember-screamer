@@ -1,0 +1,9 @@
+<h1>Conversation</h1>
+<ul>
+  {{#each conversation.messages as |message|}}
+    <li>{{message}}</li>
+  {{/each}}
+</ul>
+
+{{input value=message placeholder="Write a message..." enter="addMessage"}}
+<button {{action "addMessage"}} class="success button">Add</button>
