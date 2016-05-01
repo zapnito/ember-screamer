@@ -1,6 +1,25 @@
 & {
+  $add-button-width: 80px;
+
   .messages {
     list-style: none;
     margin-left: 0;
+  }
+
+  .new-message {
+    &__text {
+      width: calc(100% - #{$add-button-width});
+      float: left;
+      border-right: none;
+    }
+
+    &__button {
+      float: right;
+      width: $add-button-width;
+    }
+
+    &__text, &__button {
+      height: 40px;
+    }
   }
 }

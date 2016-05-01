@@ -6,6 +6,7 @@
   {{/each}}
 </ul>
 
-{{input value=message placeholder="Write a message..." enter="addMessage"}}
-<button {{action "addMessage"}} class="success button">Add</button>
-
+<div class="new-message">
+  {{input class="new-message__text" value=message placeholder="Write a message..." enter="addMessage"}}
+  <input class="new-message__button" type="submit" class="success button" value="Add" />
+</div>
