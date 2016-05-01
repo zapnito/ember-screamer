@@ -1,5 +1,6 @@
 <h1>Conversation</h1>
-<ul>
+
+<ul class="messages">
   {{#each conversation.messages as |message|}}
     <li>{{message}}</li>
   {{/each}}
@@ -7,3 +8,4 @@
 
 {{input value=message placeholder="Write a message..." enter="addMessage"}}
 <button {{action "addMessage"}} class="success button">Add</button>
+
