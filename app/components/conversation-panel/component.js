@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  state: Ember.inject.service('state'),
+  store: Ember.inject.service('store'),
   conversation: null,
 
   reset() {
@@ -13,7 +13,7 @@ export default Ember.Component.extend({
       let { message } = this.getProperties('message');
       this.reset();
 
-      this.get('state').dispatch({
+      this.get('store').dispatch({
         op: 'addMessage',
         conversationId: 'lobby',
         message

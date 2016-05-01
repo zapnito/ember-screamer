@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  state: Ember.inject.service('state'),
+  store: Ember.inject.service('store'),
 
   model() {
-    return this.get('state').subscribe('conversations', 'lobby');
+    return this.get('store').subscribe('conversations', 'lobby');
   }
 });
