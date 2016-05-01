@@ -16,7 +16,7 @@ export default Ember.Component.extend({
       this.get('store').dispatch({
         op: 'addMessage',
         conversationId: 'lobby',
-        message
+        body: message
       });
     }
   }
