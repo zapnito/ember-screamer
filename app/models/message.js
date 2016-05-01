@@ -1,3 +1,5 @@
 export default Ember.Object.extend({
-  body: null
+  id: null,
+  body: null,
+  status: null
 });

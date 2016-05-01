@@ -1,12 +1,30 @@
 import Message from 'ember-screamer/models/message';
 
+function updateInMessages(messages, message) {
+  let index = messages.findIndex(candidate => candidate.id === message.id);
+
+  if (index !== -1) {
+    return messages.update(index, () => message);
+  } else {
+    return messages.push(message);
+  }
+}
+
 const reducers = {
-  addMessage(state, { op, conversationId, body }) {
-    let message = Message.create({ body });
-    return state.updateIn(['conversations', conversationId, 'messages'], messages => messages.push(message));
+  addMessageRequested(state, { op, topic, id, body, status }) {
+    let conversationId = topic.split(":")[1];
+    let path = ['conversations', conversationId, 'messages'];
+    let message = { id, body, status};
+
+    return state.updateIn(path, messages => updateInMessages(messages, message));
   }
 }
 
 export default function (state, operation) {
-  return reducers[operation.op] ? reducers[operation.op](state, operation) : state;
+  if (!operation.topic.match(/^conversations/)) return state;
+
+  switch (operation.op) {
+    case 'addMessage': return reducers.addMessageRequested(state, operation);
+    default: return state;
+  }
 };
