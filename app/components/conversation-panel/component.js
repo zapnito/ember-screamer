@@ -4,11 +4,20 @@ export default Ember.Component.extend({
   state: Ember.inject.service('state'),
   conversation: null,
 
+  reset() {
+    this.set('message', null);
+  },
+
   actions: {
     addMessage() {
       let { message } = this.getProperties('message');
-      this.set('message', null);
-      this.get('state').dispatch('addMessage', message, 'lobby');
+      this.reset();
+
+      this.get('state').dispatch({
+        op: 'addMessage',
+        conversationId: 'lobby',
+        message
+      });
     }
   }
 });

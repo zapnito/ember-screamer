@@ -23,19 +23,17 @@ export default Ember.Service.extend({
     this._queue = Ember.RSVP.resolve();
   },
 
-  dispatch(event, ...args) {
+  dispatch(operation) {
     this._queue = this._queue.finally(() => {
-      let action = { type: event, args: args };
-
-      return this._reduce(this._state, action).then(state => {
+      return this._reduce(this._state, operation).then(state => {
         this._state = state;
         this._broadcasts.trigger('updated', state);
       });
     });
   },
 
-  subscribe(...path){
-    const subscription = Ember.ObjectProxy.create({});
+  subscribe(...path) {
+    let subscription = Ember.ObjectProxy.create({});
     this._updateSubscription(subscription, this._state, path);
 
     this._broadcasts.on('updated', state => {
@@ -49,12 +47,12 @@ export default Ember.Service.extend({
     subscription.set('content', state.getIn(path).toJS());
   },
 
-  _reduce(state, action) {
-    return Ember.RSVP.resolve(this.reducers[action.type](state, ...action.args));
+  _reduce(state, operation) {
+    return Ember.RSVP.resolve(this.reducers[operation.op](state, operation));
   },
 
   reducers: {
-    addMessage(state, message, conversationId) {
+    addMessage(state, { message, conversationId }) {
       return state.updateIn(['conversations', conversationId, 'messages'], messages => messages.push(message));
     }
   }
