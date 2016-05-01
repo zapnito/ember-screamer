@@ -20,15 +20,18 @@ export default Ember.Service.extend({
     this._super();
     this._state = initialState();
     this._broadcasts = Ember.Object.extend(Ember.Evented).create();
+    this._queue = Ember.RSVP.resolve();
   },
 
   dispatch(event, ...args) {
-    let action = { type: event, args: args };
+    this._queue = this._queue.finally(() => {
+      let action = { type: event, args: args };
 
-    let state = this._reduce(this._state, action);
-
-    this._state = state;
-    this._broadcasts.trigger('updated', state);
+      return this._reduce(this._state, action).then(state => {
+        this._state = state;
+        this._broadcasts.trigger('updated', state);
+      });
+    });
   },
 
   subscribe(...path){
@@ -47,7 +50,7 @@ export default Ember.Service.extend({
   },
 
   _reduce(state, action) {
-    return this.reducers[action.type](state, ...action.args);
+    return Ember.RSVP.resolve(this.reducers[action.type](state, ...action.args));
   },
 
   reducers: {
