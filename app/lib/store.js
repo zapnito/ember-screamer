@@ -32,4 +32,4 @@ export default class {
   _updateSubscription(subscription, state, path) {
     subscription.set('content', state.getIn(path).toJS());
   }
-};
+}

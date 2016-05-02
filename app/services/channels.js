@@ -1,8 +1,9 @@
-import Phoenix from "npm:phoenix";
+import Phoenix from 'npm:phoenix';
+import Ember from 'ember';
 
-let socket = new Phoenix.Socket("ws://localhost:4000/socket", {
+let socket = new Phoenix.Socket('ws://localhost:4000/socket', {
   // params: {token: window.userToken},
-  logger: (kind, msg, data) => { console.log(`${kind}: ${msg}`, data) }
+  logger: (kind, msg, data) => console.log(`${kind}: ${msg}`, data)
 });
 
 socket.connect();
@@ -33,7 +34,7 @@ class Channel {
 
     this._channel.push(operation.op, operation)
       .receive('ok', payload => store.dispatch(Object.assign({ topic, op: operation.op, status: 'succeeded' }, payload)))
-      .receive('error', reason => store.dispatch(Object.assign({ topic, op: operation.op, status: 'failed' }, payload)))
+      .receive('error', reason => store.dispatch(Object.assign({ topic, op: operation.op, status: 'failed' }, reason)));
   }
 }
 
@@ -53,7 +54,7 @@ export default Ember.Service.extend({
     let channel = this._channels[topic];
 
     if (!channel) {
-      throw new Error("Topic not subscribed to: ${topic}");
+      throw new Error('Topic not subscribed to: ${topic}');
     }
 
     channel.dispatch(operation);

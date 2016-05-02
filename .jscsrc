@@ -1,4 +1,15 @@
 {
   "preset": "ember-suave",
-  "requireParenthesesAroundArrowParam": false
+  "requireParenthesesAroundArrowParam": false,
+  "requireArrayDestructuring": false,
+  "requireCurlyBraces": [
+    "else",
+    "for",
+    "while",
+    "do",
+    "try",
+    "catch",
+    "case",
+    "default"
+  ]
 }
