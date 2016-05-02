@@ -9,14 +9,18 @@ export default Ember.Component.extend({
   }),
 
   reset() {
-    this.set('message', null);
+    this.set('body', null);
   },
 
   actions: {
     addMessage() {
-      let { message, conversation } = this.getProperties('message', 'conversation');
+      let { body, conversation } = this.getProperties('body', 'conversation');
+      let topic = `conversations:${conversation.get('id')}`;
+      let message = { op: 'addMessage', id: uuid.v4(), body };
+
       this.reset();
-      this.get('channels').dispatch(`conversations:${conversation.get('id')}`, { op: 'addMessage', id: uuid.v4(), body: message });
+
+      this.get('channels').dispatch(topic, message);
     }
   }
 });
