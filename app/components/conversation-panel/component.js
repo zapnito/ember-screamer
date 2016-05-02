@@ -4,6 +4,9 @@ import uuid from 'npm:node-uuid';
 export default Ember.Component.extend({
   channels: Ember.inject.service('channels'),
   conversation: null,
+  loading: Ember.computed('conversation.status', function() {
+    return this.get('conversation.status') !== 'succeeded';
+  }),
 
   reset() {
     this.set('message', null);

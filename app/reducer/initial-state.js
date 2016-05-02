@@ -6,6 +6,7 @@ export default function initialState() {
       lobby: {
         id: 'lobby',
         name: 'Lobby',
+        status: 'pending',
         messages: []
       }
     }
