@@ -10,11 +10,8 @@ export default class {
 
   dispatch(operation) {
     this._queue = this._queue.finally(() => {
-      return this._reduce(this._state, operation).then(state => {
-        this._broadcasts.trigger('updated', state);
-        this._state = state;
-        return state;
-      });
+      this._state = this._reduce(this._state, operation);
+      this._broadcasts.trigger('updated', this._state);
     });
   }
 
