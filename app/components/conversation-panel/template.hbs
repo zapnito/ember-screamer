@@ -5,7 +5,7 @@
 
   <ul class="messages">
     {{#each conversation.messages as |message|}}
-      <li>{{message.body}}</li>
+      <li class="message {{message.status}}">{{message.body}}</li>
     {{/each}}
   </ul>
 
