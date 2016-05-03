@@ -1,7 +1,7 @@
 {{#if loading}}
-  <h1>Loading...</h1>
+  <h2>Loading...</h2>
 {{else}}
-  <h1>Conversation</h1>
+  <h2>{{conversation.name}}</h2>
 
   <ul class="messages">
     {{#each conversation.messages as |message|}}

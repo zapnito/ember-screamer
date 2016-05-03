@@ -12,9 +12,11 @@ export default class {
     this._queue = this._queue.finally(() => {
       let state = this._reduce(this._state, operation);
       if (!state) debugger;
-      this._broadcasts.trigger('updated', state);
-      this._state = state;
-      window.state = state;
+      Ember.run(() => {
+        this._broadcasts.trigger('updated', state);
+        this._state = state;
+        window.state = state;
+      });
     });
   }
 

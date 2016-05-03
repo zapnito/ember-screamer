@@ -11,7 +11,7 @@ export default Ember.Route.extend({
   model() {
     this.get('channels').join('conversations:index', ['addConversation']);
     return this.get('store').subscribeToArray(state => {
-      return state.get('conversations').toIndexedSeq().toJS();
+      return state.get('conversations').toIndexedSeq().sortBy(c => c.get('name')).toJS();
     });
   }
 });

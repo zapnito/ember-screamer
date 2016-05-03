@@ -32,16 +32,25 @@ function joinConversation(state, conversationId, { topic, payload }) {
 }
 
 function joinConversationsIndex(state, operation) {
-  if (status !== 'succeeded') return state;
+  if (!operation.payload) return state;
 
   let conversations = operation.payload.reduce((conversations, conversation) => {
     conversations[conversation.id] = conversation;
     return conversations;
   }, {});
 
-  console.log({conversations});
-
   return state.mergeDeep({ conversations });
+}
+
+function addConversation(state, operation) {
+  return state.mergeDeep({
+    conversations: {
+      [operation.id]: {
+        id: operation.id,
+        name: operation.name
+      }
+    }
+  });
 }
 
 export default function reduce(state, operation) {
@@ -50,6 +59,7 @@ export default function reduce(state, operation) {
 
   console.log('operationz', operation);
   if (topic === 'conversations:index' && op === 'join') return joinConversationsIndex(state, operation);
+  if (topic === 'conversations:index' && op === 'addConversation') return addConversation(state, operation);
 
   let conversationId = operation.topic.split(':')[1];
 

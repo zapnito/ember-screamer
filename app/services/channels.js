@@ -14,7 +14,10 @@ export default Ember.Service.extend({
 
   join(topic, ops) {
     let { socket, store } = this.getProperties('socket', 'store');
-    this._channels[topic] = new Channel(socket, topic, store, ops);
+
+    if (!this._channels[topic]) {
+      this._channels[topic] = new Channel(socket, topic, store, ops);
+    }
   },
 
   dispatch(topic, operation) {
