@@ -10,23 +10,33 @@ export default class {
 
   dispatch(operation) {
     this._queue = this._queue.finally(() => {
-      this._state = this._reduce(this._state, operation);
-      this._broadcasts.trigger('updated', this._state);
+      let state = this._reduce(this._state, operation);
+      if (!state) debugger;
+      this._broadcasts.trigger('updated', state);
+      this._state = state;
+      window.state = state;
     });
   }
 
-  subscribe(...path) {
+  subscribe(extractor) {
     let subscription = Ember.ObjectProxy.create({});
-    this._updateSubscription(subscription, this._state, path);
+    subscription.set('content', extractor(this._state))
 
     this._broadcasts.on('updated', state => {
-      this._updateSubscription(subscription, state, path);
+      subscription.set('content', extractor(state));
     });
 
     return subscription;
   }
 
-  _updateSubscription(subscription, state, path) {
-    subscription.set('content', state.getIn(path).toJS());
+  subscribeToArray(extractor) {
+    let subscription = Ember.ArrayProxy.create({});
+    subscription.set('content', extractor(this._state))
+
+    this._broadcasts.on('updated', state => {
+      subscription.set('content', extractor(state));
+    });
+
+    return subscription;
   }
 }

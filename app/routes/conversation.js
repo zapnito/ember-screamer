@@ -8,6 +8,8 @@ export default Ember.Route.extend({
     let conversationId = params['conversation_id'];
     let topic = `conversations:${conversationId}`;
     this.get('channels').join(topic, ['addMessage']);
-    return this.get('store').subscribe('conversations', conversationId);
+    return this.get('store').subscribe(state => {
+      return state.getIn(['conversations', conversationId]).toJS()
+    });
   }
 });

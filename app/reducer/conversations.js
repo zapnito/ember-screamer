@@ -31,12 +31,27 @@ function joinConversation(state, conversationId, { topic, payload }) {
   });
 }
 
-export default function reduce(state, operation) {
-  if (!operation.topic.match(/^conversations/)) return state;
+function joinConversationsIndex(state, operation) {
+  if (status !== 'succeeded') return state;
 
-  let { op, status } = operation;
+  let conversations = operation.payload.reduce((conversations, conversation) => {
+    conversations[conversation.id] = conversation;
+    return conversations;
+  }, {});
+
+  console.log({conversations});
+
+  return state.mergeDeep({ conversations });
+}
+
+export default function reduce(state, operation) {
+  let { op, status, topic } = operation;
+  if (!topic.match(/^conversations/)) return state;
+
+  console.log('operationz', operation);
+  if (topic === 'conversations:index' && op === 'join') return joinConversationsIndex(state, operation);
+
   let conversationId = operation.topic.split(':')[1];
-  console.log({ operation });
 
   if (op === 'addMessage') return addMessage(state, conversationId, operation);
   if (op === 'join' && status === 'requested') return joinConversationRequested(state, conversationId);
