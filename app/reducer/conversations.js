@@ -24,7 +24,6 @@ function joinConversationRequested(state, conversationId) {
 }
 
 function joinConversation(state, conversationId, { topic, payload }) {
-  console.log('joinConversation', arguments);
   return state.mergeDeep({
     [conversationId]: {
       status: 'succeeded',

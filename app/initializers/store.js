@@ -25,7 +25,6 @@ class StoreProxy {
 }
 
 let store = new StoreProxy(createStore(reduce));
-// let store = createStore(reduce);
 
 export function initialize(application) {
   application.register('service:store', store, { instantiate: false });
