@@ -16,7 +16,12 @@ export default Ember.Service.extend({
     let { socket, store } = this.getProperties('socket', 'store');
 
     if (!this._channels[topic]) {
-      this._channels[topic] = new Channel(socket, topic, store, ops);
+      let channel = new Channel(socket, topic, store, ops);
+      this._channels[topic] = channel;
+      return channel.join();
+    }
+    else {
+      return Ember.RSVP.resolve();
     }
   },
 

@@ -2,14 +2,14 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   store: Ember.inject.service('store'),
-  channels: Ember.inject.service('channels'),
+  conversations: Ember.inject.service('conversations'),
 
   model(params) {
+    let conversations = this.get('conversations');
     let conversationId = params['conversation_id'];
-    let topic = `conversations:${conversationId}`;
-    this.get('channels').join(topic, ['addMessage']);
-    return this.get('store').subscribe(state => {
-      return state.getIn(['conversations', conversationId]).toJS()
+
+    return conversations.subscribeToConversation(conversationId).then(() => {
+      return conversations.getConversation(conversationId);
     });
   }
 });

@@ -13,6 +13,7 @@ export default class {
       let state = this._reduce(this._state, operation);
       if (!state) debugger;
       Ember.run(() => {
+        console.log('op', operation, state);
         this._broadcasts.trigger('updated', state);
         this._state = state;
         window.state = state;
@@ -21,8 +22,9 @@ export default class {
   }
 
   subscribe(extractor) {
+    console.log('subscribe', extractor);
     let subscription = Ember.ObjectProxy.create({});
-    subscription.set('content', extractor(this._state))
+    subscription.set('content', extractor(this._state));
 
     this._broadcasts.on('updated', state => {
       subscription.set('content', extractor(state));
@@ -32,8 +34,9 @@ export default class {
   }
 
   subscribeToArray(extractor) {
+    console.log('subscribeToArray');
     let subscription = Ember.ArrayProxy.create({});
-    subscription.set('content', extractor(this._state))
+    subscription.set('content', extractor(this._state));
 
     this._broadcasts.on('updated', state => {
       subscription.set('content', extractor(state));

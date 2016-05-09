@@ -4,15 +4,29 @@ export default class Channel {
     this._store = store;
     this._topic = topic;
 
-    store.dispatch({ topic, op: 'join', status: 'requested' });
-
     ops.forEach(op => this._channel.on(op, payload => {
       store.dispatch(Object.assign({ topic, op, status: 'received' }, payload));
     }));
+  }
 
-    this._channel.join()
-      .receive('ok', payload => store.dispatch({ topic, op: 'join', status: 'succeeded', payload }))
-      .receive('error', reason => store.dispatch({ topic, op: 'join', status: 'failed', reason }));
+  join() {
+    let store = this._store;
+    let channel = this._channel;
+    let topic = this._topic;
+
+    store.dispatch({ topic, op: 'join', status: 'requested' });
+
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      channel.join()
+        .receive('ok', payload => {
+          store.dispatch({ topic, op: 'join', status: 'succeeded', payload });
+          resolve();
+        })
+        .receive('error', reason => {
+          store.dispatch({ topic, op: 'join', status: 'failed', reason });
+          reject(reason);
+        });
+    });
   }
 
   dispatch(operation) {
