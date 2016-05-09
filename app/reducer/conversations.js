@@ -1,3 +1,5 @@
+import Immutable from 'npm:immutable';
+
 function updateInMessages(messages, message) {
   let index = messages.findIndex(candidate => candidate.id === message.id);
 
@@ -9,24 +11,24 @@ function updateInMessages(messages, message) {
 }
 
 function addMessage(state, conversationId, { topic, id, body, status }) {
-  let path = ['conversations', conversationId, 'messages'];
+  console.debug('addMessage', arguments);
+  let path = [conversationId, 'messages'];
   let message = { id, body, status };
 
   return state.updateIn(path, messages => updateInMessages(messages, message));
 }
 
 function joinConversationRequested(state, conversationId) {
-  let path = ['conversations', conversationId, 'status'];
+  let path = [conversationId, 'status'];
   return state.updateIn(path, () => 'requested');
 }
 
 function joinConversation(state, conversationId, { topic, payload }) {
+  console.log('joinConversation', arguments);
   return state.mergeDeep({
-    conversations: {
-      [conversationId]: {
-        status: 'succeeded',
-        messages: payload
-      }
+    [conversationId]: {
+      status: 'succeeded',
+      messages: payload
     }
   });
 }
@@ -39,23 +41,26 @@ function joinConversationsIndex(state, action) {
     return conversations;
   }, {});
 
-  return state.mergeDeep({ conversations });
+  return Immutable.fromJS(conversations);
 }
 
 function addConversation(state, action) {
   return state.mergeDeep({
-    conversations: {
-      [action.id]: {
-        id: action.id,
-        name: action.name
-      }
+    [action.id]: {
+      id: action.id,
+      name: action.name
     }
   });
 }
 
-export default function reduce(state, action) {
+function isHandled(action) {
+  return ['join', 'addConversation', 'addMessage'].indexOf(action.type) !== -1;
+}
+
+export default function reduce(state = Immutable.fromJS({}), action) {
   let { type, status, topic } = action;
-  if (!topic.match(/^conversations/)) return state;
+
+  if (!isHandled(action)) return state;
 
   if (topic === 'conversations:index' && type === 'join') return joinConversationsIndex(state, action);
   if (topic === 'conversations:index' && type === 'addConversation') return addConversation(state, action);

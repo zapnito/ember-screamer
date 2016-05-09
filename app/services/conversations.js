@@ -18,10 +18,13 @@ export default Ember.Service.extend({
     let store = this.get('store');
     let subscription = Ember.ObjectProxy.create({});
 
-    store.subscribe(() => {
-      let conversation = store.getState().getIn(['conversations', conversationId]).toJS();
+    function update() {
+      let conversation = store.getState().conversations.getIn([conversationId]).toJS();
       subscription.set('content', conversation);
-    });
+    }
+
+    store.subscribe(update);
+    update();
 
     return subscription;
   },
@@ -30,10 +33,13 @@ export default Ember.Service.extend({
     let store = this.get('store');
     let subscription = Ember.ArrayProxy.create({});
 
-    store.subscribe(() => {
-      let newState = store.getState().get('conversations').toIndexedSeq().sortBy(c => c.get('name')).toJS();
+    function update() {
+      let newState = store.getState().conversations.toIndexedSeq().sortBy(c => c.get('name')).toJS();
       subscription.set('content', newState);
-    });
+    }
+
+    store.subscribe(update);
+    update();
 
     return subscription;
   },
