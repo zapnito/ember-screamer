@@ -1,9 +1,8 @@
 import Ember from 'ember';
-import uuid from 'npm:node-uuid';
 
 export default Ember.Component.extend({
-  channels: Ember.inject.service('channels'),
   conversation: null,
+  conversations: Ember.inject.service(),
   loading: Ember.computed('conversation.status', function() {
     return this.get('conversation.status') !== 'succeeded';
   }),
@@ -14,13 +13,9 @@ export default Ember.Component.extend({
 
   actions: {
     addMessage() {
-      let { body, conversation } = this.getProperties('body', 'conversation');
-      let topic = `conversations:${conversation.get('id')}`;
-      let message = { op: 'addMessage', id: uuid.v4(), body };
-
+      let { body, conversation, conversations } = this.getProperties('body', 'conversation', 'conversations');
+      conversations.addMesage(conversation.get('id'), body);
       this.reset();
-
-      this.get('channels').dispatch(topic, message);
     }
   }
 });

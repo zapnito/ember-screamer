@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import uuid from 'npm:node-uuid';
 
 export default Ember.Component.extend({
   conversations: null,
@@ -12,12 +11,9 @@ export default Ember.Component.extend({
   actions: {
     addConversation() {
       let { name } = this.getProperties('name');
-      let topic = `conversations:index`;
-      let conversation = { op: 'addConversation', id: uuid.v4(), name };
-      console.log({conversation});
-
       this.reset();
-      this.get('channels').dispatch(topic, conversation);
+      let conversationId = this.add(name);
+      this.get('router').transitionTo('conversation', conversationId);
     }
   }
-})
+});
