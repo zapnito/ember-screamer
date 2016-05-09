@@ -6,6 +6,8 @@ export default Ember.Route.extend({
 
   model() {
     let conversations = this.get('conversations');
-    return conversations.subscribeToList().then(() => conversations.getList());
+    return conversations.subscribeToList().then(() => {
+      return conversations.getList();
+    });
   }
 });

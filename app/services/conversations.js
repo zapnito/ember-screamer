@@ -15,20 +15,32 @@ export default Ember.Service.extend({
   },
 
   getConversation(conversationId) {
-    return this.get('store').subscribe(state => {
-      return state.getIn(['conversations', conversationId]).toJS();
+    let store = this.get('store');
+    let subscription = Ember.ObjectProxy.create({});
+
+    store.subscribe(() => {
+      let conversation = store.getState().getIn(['conversations', conversationId]).toJS();
+      subscription.set('content', conversation);
     });
+
+    return subscription;
   },
 
   getList() {
-    return this.get('store').subscribeToArray(state => {
-      return state.get('conversations').toIndexedSeq().sortBy(c => c.get('name')).toJS();
+    let store = this.get('store');
+    let subscription = Ember.ArrayProxy.create({});
+
+    store.subscribe(() => {
+      let newState = store.getState().get('conversations').toIndexedSeq().sortBy(c => c.get('name')).toJS();
+      subscription.set('content', newState);
     });
+
+    return subscription;
   },
 
   add(name) {
     let topic = `conversations:index`;
-    let conversation = { op: 'addConversation', id: uuid.v4(), name };
+    let conversation = { type: 'addConversation', id: uuid.v4(), name };
 
     this.get('channels').dispatch(topic, conversation);
 
@@ -37,7 +49,7 @@ export default Ember.Service.extend({
 
   addMesage(conversationId, body) {
     let topic = `conversations:${conversationId}`;
-    let message = { op: 'addMessage', id: uuid.v4(), body };
+    let message = { type: 'addMessage', id: uuid.v4(), body };
 
     this.get('channels').dispatch(topic, message);
   }

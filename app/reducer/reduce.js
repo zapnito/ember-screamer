@@ -4,6 +4,6 @@ const reducers = [
   conversations
 ];
 
-export default function reduce(state, operation) {
-  return reducers.reduce((state, reduction) => reduction(state, operation), state);
+export default function reduce(state, action) {
+  return reducers.reduce((state, reduction) => reduction(state, action), state);
 }

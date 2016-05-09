@@ -25,13 +25,13 @@ export default Ember.Service.extend({
     }
   },
 
-  dispatch(topic, operation) {
+  dispatch(topic, action) {
     let channel = this._channels[topic];
 
     if (!channel) {
       throw new Error('Topic not subscribed to: ${topic}');
     }
 
-    channel.dispatch(operation);
+    channel.dispatch(action);
   }
 });

@@ -8,7 +8,7 @@ function updateInMessages(messages, message) {
   }
 }
 
-function addMessage(state, conversationId, { op, topic, id, body, status }) {
+function addMessage(state, conversationId, { topic, id, body, status }) {
   let path = ['conversations', conversationId, 'messages'];
   let message = { id, body, status };
 
@@ -31,10 +31,10 @@ function joinConversation(state, conversationId, { topic, payload }) {
   });
 }
 
-function joinConversationsIndex(state, operation) {
-  if (!operation.payload) return state;
+function joinConversationsIndex(state, action) {
+  if (!action.payload) return state;
 
-  let conversations = operation.payload.reduce((conversations, conversation) => {
+  let conversations = action.payload.reduce((conversations, conversation) => {
     conversations[conversation.id] = conversation;
     return conversations;
   }, {});
@@ -42,29 +42,28 @@ function joinConversationsIndex(state, operation) {
   return state.mergeDeep({ conversations });
 }
 
-function addConversation(state, operation) {
+function addConversation(state, action) {
   return state.mergeDeep({
     conversations: {
-      [operation.id]: {
-        id: operation.id,
-        name: operation.name
+      [action.id]: {
+        id: action.id,
+        name: action.name
       }
     }
   });
 }
 
-export default function reduce(state, operation) {
-  let { op, status, topic } = operation;
+export default function reduce(state, action) {
+  let { type, status, topic } = action;
   if (!topic.match(/^conversations/)) return state;
 
-  console.log('operationz', operation);
-  if (topic === 'conversations:index' && op === 'join') return joinConversationsIndex(state, operation);
-  if (topic === 'conversations:index' && op === 'addConversation') return addConversation(state, operation);
+  if (topic === 'conversations:index' && type === 'join') return joinConversationsIndex(state, action);
+  if (topic === 'conversations:index' && type === 'addConversation') return addConversation(state, action);
 
-  let conversationId = operation.topic.split(':')[1];
+  let conversationId = action.topic.split(':')[1];
 
-  if (op === 'addMessage') return addMessage(state, conversationId, operation);
-  if (op === 'join' && status === 'requested') return joinConversationRequested(state, conversationId);
-  if (op === 'join' && status === 'succeeded') return joinConversation(state, conversationId, operation);
+  if (type === 'addMessage') return addMessage(state, conversationId, action);
+  if (type === 'join' && status === 'requested') return joinConversationRequested(state, conversationId);
+  if (type === 'join' && status === 'succeeded') return joinConversation(state, conversationId, action);
   return state;
 }
