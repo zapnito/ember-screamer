@@ -4,6 +4,10 @@
   .messages {
     list-style: none;
     margin-left: 0;
+
+    .message.requested {
+      color: $dark-gray;
+    }
   }
 
   .new-message {

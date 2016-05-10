@@ -46,6 +46,8 @@
     "ember-suave": "2.0.1",
     "immutable": "^3.8.1",
     "loader.js": "^4.0.1",
-    "phoenix": "github:phoenixframework/phoenix"
+    "phoenix": "github:phoenixframework/phoenix",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.0.1"
   }
 }

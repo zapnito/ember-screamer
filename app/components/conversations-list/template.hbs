@@ -1,0 +1,11 @@
+<h4>Conversations</h4>
+<ul>
+  {{#each conversations as |conversation|}}
+    <li>{{#link-to "conversation" conversation.id}}{{conversation.name}}{{/link-to}}</li>
+  {{/each}}
+</ul>
+
+<div class="new-conversation">
+  {{input class="new-conversation__text" value=name placeholder="Let's talk about..." enter="addConversation"}}
+  <input class="new-conversation__button" type="submit" class="success button" value="Add" />
+</div>

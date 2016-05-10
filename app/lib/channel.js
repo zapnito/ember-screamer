@@ -1,28 +1,42 @@
 export default class Channel {
-  constructor(socket, topic, store, ops = []) {
+  constructor(socket, topic, store, actionTypes = []) {
     this._channel = socket.channel(topic);
     this._store = store;
     this._topic = topic;
 
-    store.dispatch({ topic, op: 'join', status: 'requested' });
-
-    ops.forEach(op => this._channel.on(op, payload => {
-      store.dispatch(Object.assign({ topic, op, status: 'received' }, payload));
+    actionTypes.forEach(actionType => this._channel.on(actionType, payload => {
+      store.dispatch(Object.assign({ topic, type: actionType, status: 'received' }, payload));
     }));
-
-    this._channel.join()
-      .receive('ok', payload => store.dispatch({ topic, op: 'join', status: 'succeeded', payload }))
-      .receive('error', reason => store.dispatch({ topic, op: 'join', status: 'failed', reason }));
   }
 
-  dispatch(operation) {
+  join() {
+    let store = this._store;
+    let channel = this._channel;
+    let topic = this._topic;
+
+    store.dispatch({ topic, type: 'join', status: 'requested' });
+
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      channel.join()
+        .receive('ok', payload => {
+          store.dispatch({ topic, type: 'join', status: 'succeeded', payload });
+          resolve();
+        })
+        .receive('error', reason => {
+          store.dispatch({ topic, type: 'join', status: 'failed', reason });
+          reject(reason);
+        });
+    });
+  }
+
+  dispatch(action) {
     let topic = this._topic;
     let store = this._store;
 
-    store.dispatch(Object.assign({ topic, status: 'requested' }, operation));
+    store.dispatch(Object.assign({ topic, status: 'requested' }, action));
 
-    this._channel.push(operation.op, operation)
-      .receive('ok', payload => store.dispatch(Object.assign({ topic, op: operation.op, status: 'succeeded' }, payload)))
-      .receive('error', reason => store.dispatch(Object.assign({ topic, op: operation.op, status: 'failed' }, reason)));
+    this._channel.push(action.type, action)
+      .receive('ok', payload => store.dispatch(Object.assign({ topic, type: action.type, status: 'succeeded' }, payload)))
+      .receive('error', reason => store.dispatch(Object.assign({ topic, type: action.type, status: 'failed' }, reason)));
   }
 }

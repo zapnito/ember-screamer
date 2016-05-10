@@ -14,16 +14,24 @@ export default Ember.Service.extend({
 
   join(topic, ops) {
     let { socket, store } = this.getProperties('socket', 'store');
-    this._channels[topic] = new Channel(socket, topic, store, ops);
+
+    if (!this._channels[topic]) {
+      let channel = new Channel(socket, topic, store, ops);
+      this._channels[topic] = channel;
+      return channel.join();
+    }
+    else {
+      return Ember.RSVP.resolve();
+    }
   },
 
-  dispatch(topic, operation) {
+  dispatch(topic, action) {
     let channel = this._channels[topic];
 
     if (!channel) {
       throw new Error('Topic not subscribed to: ${topic}');
     }
 
-    channel.dispatch(operation);
+    channel.dispatch(action);
   }
 });
